@@ -1,5 +1,5 @@
 import eNewsletterFormComponent from "./eNewsletterForm.vue";
-import eNewsletterFormModule from './eNewsletterForm.module.js'
+
 
 export default {
   install(Vue, options) {
@@ -10,7 +10,6 @@ export default {
 
     // Let's register our component globally
     // https://vuejs.org/v2/guide/components-registration.html
-    Vue.component("e-newsletter", eNewsletterFormComponent);
-    options.store.registerModule('eNewsletterForm', eNewsletterFormModule)
+    Vue.component("e-newsletter-form", eNewsletterFormComponent);
   }
 }

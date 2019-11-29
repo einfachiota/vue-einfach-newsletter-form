@@ -1,7 +1,6 @@
 <template>
   <form
   id="app"
-  @submit="checkForm"
 >
   <p v-if="errors.length">
     <b>Please correct the following error(s):</b>
@@ -11,24 +10,56 @@
   </p>
 
   <p>
+    <label for="first_name">Vorname</label>
     <input
-      type="submit"
-      value="Submit"
+      id="first_name"
+      v-model="form.first_name"
+      type="text"
+      name="first_name"
     >
+  </p>
+
+   <p>
+    <label for="last_name">Nachname</label>
+    <input
+      id="last_name"
+      v-model="form.last_name"
+      type="text"
+      name="last_name"
+    >
+  </p>
+   <p>
+    <label for="email">Deine E-Mail Adresse</label>
+    <input
+      id="email"
+      v-model="form.email"
+      type="email"
+      name="email"
+    >
+  </p>
+  <p>
+    <button
+      @click="checkForm"
+    >Jetzt Abonieren</button>
   </p>
 
 </form>
 </template>
 
 <script>
-import axios from "axios";
+
 export default {
   name: "eNewsletterForm",
   data() {
     return {
-      form: null,
+      form: {
+        first_name: null,
+        last_name: null,
+        email: null
+      },
       loading: "false",
-      response: null
+      response: null,
+      errors: []
     };
   },
   computed: {
@@ -37,37 +68,41 @@ export default {
     }
   },
   methods: {
-    checkForm() {
+    checkForm(e) {
+      this.errors = [];
+
+      console.log("send")
+      if (this.form.first_name && this.form.last_name && this.form.email) {
+              console.log("yes")
+
       const self = this;
-      axios
-        .post(this.$eNewsletterFormOptons.url, this.form)
+      fetch(this.$eNewsletterFormOptons.url, {method: 'post', data: this.form})
+        .then((response) => res.json())
         .then(function(response) {
           console.log("response");
           console.log(response);
           self.response = response;
         })
         .catch(function(error) {
-          console.log("CLG");
           console.log(error);
-          self.data.status = "error";
-        });
-    }
-  },
-  sockets: {
-    connect() {
-      console.log("socket connected");
-    },
-    payments(payment) {
-      console.log("payments", payment);
-      if (payment.status === "paymentArrived") {
-        this.state = "transaction_incoming";
-      } else if (payment.status === "paymentSuccess") {
-        console.log("emit payment");
-        this.$emit("paymentSuccess", payment);
+          self.errors.push('Error.', error);
+        })
+      } else {
+        // form error handling
+        if (!this.form.first_name) {
+          this.errors.push('Name required.');
+        }
+        if (!this.form.last_name) {
+          this.errors.push('Nachname required.');
+        }
+        if (!this.form.email) {
+          this.errors.push('Email required.');
+        }
       }
-    },
-    disconnect() {
-      console.log("socket disconnect");
+
+
+    
+      e.preventDefault();
     }
   }
 };
